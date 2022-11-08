@@ -1,4 +1,3 @@
-import time
 import tkinter as tk
 from copy import deepcopy
 from datetime import datetime
@@ -22,7 +21,7 @@ h={}
 
 
 
-for index in range(20):
+for index in range(1500):  #NUMERO DE NODOS A UTILIZAR
     data[index]=list_airport[index]
 
 mygraf=grafo.G(data=data,dirigido=True)
@@ -34,17 +33,10 @@ adjlist={}
 
 relation=funciones.CreateRelation(data)
 funciones.Create_edges(mygraf,data,relation,adjlist)
-
-
 relation=funciones.CreateRelation(data)
 funciones.Create_edges(mygraf,data,relation,adjlist)
-
-
 mygraf.set_h_adj_list(h,adjlist)
-mygraf.a_star_algorithm(0,16)
 mygraf.floyd_warshall()
-print(mygraf.distance[0][16])
-
 
 class Aplication():
     
@@ -104,13 +96,13 @@ class Aplication():
         
         if abs(self.now_8-actual)>8:
             self.relation=funciones.CreateRelation(data)
-            
+            self.grafo.floyd_warshall()
             self.grafo.set_matrix
             adjlist={}
 
             funciones.Create_edges(self.grafo,self.Data,self.relation,adjlist)
             self.grafo.set_h_adj_list(h,adjlist)
-            
+            self.grafo.floyd_warshall()
             self.now_3=datetime.now().hour
 
         self.root.mainloop()
@@ -266,7 +258,7 @@ class Aplication():
         self.Rutas_label=tk.Label(self.Algorithms,text="Realizar mas corta ruta a: ")
         self.Ruta_entry=tk.Entry(self.Algorithms)
         self.Ruta_button=tk.Button(self.Algorithms,text="iniciar algoritmo")
-        self.Rutas_Convexa_label=tk.Label(self.Algorithms,text="Dame la distancia hasta mi destion: ")
+        self.Rutas_Convexa_label=tk.Label(self.Algorithms,text="Dame la distancia hasta mi destino: ")
         self.Rutas_Convexa_buton=tk.Button(self.Algorithms,text="iniciar algoritmo")
         self.Resultado=tk.Frame(self.Algorithms)
         self.Button_Salir_algorithms=tk.Button(self.Algorithms,text="Salir")
@@ -323,7 +315,7 @@ class Aplication():
             else:
                 self.Ruta_minima=tk.Label(self.Resultado,text="No existe ruta!")
 
-            self.Ruta_minima.config(background=self.colores[1],foreground=self.colores[4],font=(self.Fuente,self.LetraH4))
+            self.Ruta_minima.config(background=self.colores[1],foreground=self.colores[4],font=(self.Fuente,self.LetraP))
             self.Ruta_minima.grid(row=0,column=0)
 
 
@@ -335,8 +327,8 @@ class Aplication():
             self.Ruta_minima.destroy()
 
             if  self.grafo.distance[self.User][i] != False:
-                self.show=tk.Label(self.Resultado,text=str(self.grafo.distance[self.User][i])+" Km")
-                self.show.config(background=self.colores[1],foreground=self.colores[4],font=(self.Fuente,self.LetraH4))
+                self.show=tk.Label(self.Resultado,text="El recorrido es de "+str(self.grafo.distance[self.User][i])+" Km")
+                self.show.config(background=self.colores[1],foreground=self.colores[4],font=(self.Fuente,self.LetraP))
                 self.show.grid(column=0,row=0)
 
 

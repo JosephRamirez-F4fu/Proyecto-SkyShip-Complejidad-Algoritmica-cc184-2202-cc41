@@ -1,6 +1,3 @@
-from collections import deque
-from copy import deepcopy
-
 INF=10**5
 
 class G:
@@ -116,6 +113,8 @@ class G:
             for j in range(nV):
                 if(distance[i][j] == INF):
                     distance[i][j]=False
+                else:
+                    distance[i][j]=round(distance[i][j],2)
             
         self.distance=distance
 

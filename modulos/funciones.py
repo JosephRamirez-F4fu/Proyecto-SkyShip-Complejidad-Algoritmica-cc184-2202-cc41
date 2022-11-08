@@ -47,9 +47,3 @@ def Create_edges(mygraf,data,relation,adjac_lis):
             l.append((relation[i][j],distance*promdifij))
         adjac_lis[i]=l
             
-
-adjac_lis = {
-    'A': [('B', 1), ('C', 3), ('D', 7)],
-    'B': [('D', 5)],
-    'C': [('D', 12)]
-}
