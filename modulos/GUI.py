@@ -21,22 +21,23 @@ h={}
 
 
 
-for index in range(1500):  #NUMERO DE NODOS A UTILIZAR
+for index in range(200):  #NUMERO DE NODOS A UTILIZAR
     data[index]=list_airport[index]
 
 mygraf=grafo.G(data=data,dirigido=True)
-
+mygraf_not=deepcopy(mygraf)
 for index in range(len(data)):
     h[index]=1
 
 adjlist={}
+adjlist_2={}
 
 relation=funciones.CreateRelation(data)
-funciones.Create_edges(mygraf,data,relation,adjlist)
-relation=funciones.CreateRelation(data)
-funciones.Create_edges(mygraf,data,relation,adjlist)
+funciones.Create_edges(mygraf,mygraf_not,data,relation,adjlist,adjlist_2)
+
+
 mygraf.set_h_adj_list(h,adjlist)
-mygraf.floyd_warshall()
+mygraf_not.set_h_adj_list(h,adjlist_2)
 
 class Aplication():
     
@@ -61,17 +62,23 @@ class Aplication():
     
     def LoadRecursos(self):
         self.logo=tk.PhotoImage(file="img/Recurso_1.png")
+        
+
     
     def LoadGrafo(self):
         self.grafo=mygraf
+        self.grafo_not=mygraf_not
         self.grafo.floyd_warshall()
+        self.grafo_not.floyd_warshall()
         self.relation=relation
 
     def ReloadRelation(self):
         self.relation=funciones.CreateRelation(self.Data)
 
     def ReloadEdges(self):
-        funciones.Create_edges(self.grafo,self.Data,self.relation)
+        self.adjlist={}
+        self.adjlist_2={}
+        funciones.Create_edges(self.grafo,self.grafo_not,self.Data,self.relation,self.adjlist,self.adjlist_2)
     
     ###########################################################
     ## inicio aplicacion
@@ -86,23 +93,33 @@ class Aplication():
         actual=datetime.now().hour
         
         if abs(self.now_3-actual)>3:
-            self.grafo.set_matrix
-            adjlist={}
+            self.grafo.set_matrix()
+            self.adjlist={}
+            self.adjlist_2={}
 
-            funciones.Create_edges(self.grafo,self.Data,self.relation,adjlist)
-            self.grafo.set_h_adj_list(h,adjlist)
+            funciones.Create_edges(self.grafo,self.grafo_not,self.Data,self.relation,adjlist,self.adjlist_2)
+            self.grafo.set_h_adj_list(h,self.adjlist)
+            self.grafo_not.set_h_adj_list(h,self.adjlist_2)
+            
+            self.grafo_not.floyd_warshall()
+            self.grafo.floyd_warshall()
             
             self.now_3=datetime.now().hour
         
         if abs(self.now_8-actual)>8:
             self.relation=funciones.CreateRelation(data)
-            self.grafo.floyd_warshall()
-            self.grafo.set_matrix
-            adjlist={}
+           
+            self.grafo.set_matrix()
+            self.adjlist={}
+            self.adjlist_2={}
 
-            funciones.Create_edges(self.grafo,self.Data,self.relation,adjlist)
-            self.grafo.set_h_adj_list(h,adjlist)
+            funciones.Create_edges(self.grafo,self.grafo_not,self.Data,self.relation,self.adjlist,self.adjlist_2)
+            self.grafo.set_h_adj_list(h,self.adjlist)
+            self.grafo_not.set_h_adj_list(h,self.adjlist_2)
+            
             self.grafo.floyd_warshall()
+            self.grafo_not.floyd_warshall()
+            
             self.now_3=datetime.now().hour
 
         self.root.mainloop()
@@ -260,6 +277,9 @@ class Aplication():
         self.Ruta_button=tk.Button(self.Algorithms,text="iniciar algoritmo")
         self.Rutas_Convexa_label=tk.Label(self.Algorithms,text="Dame la distancia hasta mi destino: ")
         self.Rutas_Convexa_buton=tk.Button(self.Algorithms,text="iniciar algoritmo")
+        
+        
+         
         self.Resultado=tk.Frame(self.Algorithms)
         self.Button_Salir_algorithms=tk.Button(self.Algorithms,text="Salir")
     
@@ -268,10 +288,11 @@ class Aplication():
         self.Rutas_label.grid(row=0,column=0,sticky='w')
         self.Ruta_entry.grid(row=1,column=0,sticky='w')
         self.Ruta_button.grid(row=2,column=0,sticky='w')
+
         self.Rutas_Convexa_label.grid(row=3,column=0,sticky='w')
         self.Rutas_Convexa_buton.grid(row=4,column=0,sticky='w')
-        self.Resultado.grid(row=1,column=2)
-        self.Button_Salir_algorithms.grid(row=6,column=0,sticky='w')
+        self.Resultado.grid(row=6,column=0)
+        self.Button_Salir_algorithms.grid(row=1,column=2,sticky='w')
     
     def Algorithms_widgets_estilo(self):
         self.Rutas_label.config(background=self.colores[1],foreground=self.colores[4],font=(self.Fuente,self.LetraH4))
@@ -284,6 +305,17 @@ class Aplication():
     
     def Algorithms_Widgets_Funcionalities(self):
         self.Ruta_minima=tk.Label(self.Resultado)
+        self.Ruta_minima_2=tk.Label(self.Resultado)
+        self.Texto=tk.Label(self.Resultado)
+        self.Texto_v2=tk.Label(self.Resultado)
+        
+        self.accident=tk.PhotoImage(file="img/accident.png")
+        self.rain=tk.PhotoImage(file="img/rain.png")
+        self.snow=tk.PhotoImage(file="img/snow.png")
+        self.torment=tk.PhotoImage(file="img/torment.png")
+        
+        self.accident_img=tk.Label(self.Resultado)
+        
         self.show=tk.Label(self.Resultado)
         
         self.Ruta_button.config(command=lambda:self.Algorithm_Ruta_Minima())
@@ -296,27 +328,58 @@ class Aplication():
 
     def Algorithm_Ruta_Minima(self):
         if self.isCorrectCodeUser(self.Ruta_entry.get()):
-            
 
             self.Ruta_minima.destroy()
+            self.Texto.destroy()
+            self.Texto_v2.destroy()
             self.show.destroy()
-
+            self.Ruta_minima_2.destroy()
+            self.accident_img.destroy()
             i=deepcopy(self.index)
             
             Ruta=self.grafo.a_star_algorithm(self.User,i)
+            Ruta_2=self.grafo_not.a_star_algorithm(self.User,i)
             L=[]
+            L_2=[]
             for i in Ruta:
                 L.append(self.Data[i].pident)
+            for i in Ruta_2:
+                L_2.append(self.Data[i].pident)
+
+            val=data[i].get_df()
+            
+
             
             strL=" -> ".join(L)
+            strL_2=" -> ".join(L_2)
         
             if Ruta!=False:
+                
+                self.Texto=tk.Label(self.Resultado,text="La ruta principal es ....")
+                self.Texto=tk.Label(self.Resultado,text="La ruta alterna debido a los problemas es ....")
                 self.Ruta_minima=tk.Label(self.Resultado,text=strL)
+                self.Ruta_minima_2=tk.Label(self.Resultado,text=strL_2)
+                if val < 0.25 :
+                    self.accident_img=tk.Label(self.Resultado,self.rain)
+                elif 0.25 <=val and val<0.50 :
+                    self.accident_img=tk.Label(self.Resultado,self.torment)
+                elif 0.50 <=val and val<0.75 :
+                    self.accident_img=tk.Label(self.Resultado,self.snow)
+                elif 0.75 <=val and val<1.00 :
+                    self.accident_img=tk.Label(self.Resultado,self.accident)
             else:
                 self.Ruta_minima=tk.Label(self.Resultado,text="No existe ruta!")
-
+                self.Ruta_minima_2=tk.Label(self.Resultado,text="")
+                
+            self.logo_lb.config(background=self.colores[1])
             self.Ruta_minima.config(background=self.colores[1],foreground=self.colores[4],font=(self.Fuente,self.LetraP))
-            self.Ruta_minima.grid(row=0,column=0)
+            self.Ruta_minima_2.config(background=self.colores[1],foreground=self.colores[4],font=(self.Fuente,self.LetraP))
+            
+            self.Texto.grid(row=0,column=0)
+            self.Texto_v2.grid(row=2,column=0)
+            self.Ruta_minima.grid(row=1,column=0)
+            self.Ruta_minima_2.grid(row=3,column=0)
+            self.accident_img.grid(row=4,column=0)
 
 
     def Algorihm_Distancia_Minima(self):
