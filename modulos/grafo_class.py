@@ -1,4 +1,4 @@
-INF=10**5
+INF=10**8
 
 class G:
     def __init__(self,data,dirigido=False):

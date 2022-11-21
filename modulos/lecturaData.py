@@ -2,7 +2,7 @@ import csv
 
 
 def lectura_data():
-    with open('airports_formated.csv') as f:
+    with open('Data_set/airports_formated.csv') as f:
         reader = csv.reader(f)
         all_airport=[]
         for row in reader:
